@@ -97,46 +97,33 @@ class API {
     }
 
     static public function kuaishou($url) {
-        $locs = get_headers($url, true) ['Location'][1];
-        // echo($locs);
+        $locs = get_headers($url, true) ['Location'];
+        //$locs = get_headers($url, true);
+        //var_dump($locs);
         $d= 'video.kuaishou.com/';
         $e = '/';
         $flag =self::GetBetween($locs,$d,$e) ;
 
-        // echo($flag);
         preg_match('/photoId=(.*?)\&/', $locs, $matches);
-        //   var_dump($matches[1]);
-
-
+        //var_dump($matches);
         $json = self::get_ks_json($locs,$matches);
-
-        //  var_dump($json['atlas']['list']);
-        if($flag=='short-video'){
+        if(isset($json['atlas']['list']))//存在是图        //这个函数用来测试变量是否已经配置。若变量已存在则返回 true 值。其它情形返回 false 值。
+        {
             for($i=0;$i<count($json['atlas']['list']);$i++){
-
                 $img[$i] = 'https://p2.a.yximgs.com'.$json['atlas']['list'][$i];
             }
-
             $type = 'photo';
-
         }else{
-            // var_dump($json['photo']['mainMvUrls'][0]['url']);
             $img = $json['photo']['mainMvUrls'][0]['url'];
             $type = 'movie';
         }
 
-        //  var_dump( $json['shareInfo']['shareTitle']);
-        //  var_dump( 'https://p2.a.yximgs.com'.$json['atlas']['music']);
-        //  var_dump($img);
-
         if ($json) {
-
             $url = $img;
             $title = $json['shareInfo']['shareTitle'];
             $cover = 'https://p2.a.yximgs.com'.$json['atlas']['music'];
-
-
             $return = array('nickname' => $title, 'video_url' => $url, 'music' => $cover,'type'=>$type);
+            //echo '$type'.$type.'<br>';
             // var_dump($return);
             return self::result(200, $return);
 
