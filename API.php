@@ -221,8 +221,10 @@ class API {
     }
 
     static public function get_ks_json($locs,$matches) {
-        $headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1','Cookie: did=web_9bceee20fa5d4a968535a27e538bf51b; didv=1655992503000;',
+        #注意：如果解析失效（提示需要验证码），请更新下边这行代码的Cookie重试（主要是did=xxxx），抓包首页直接F12即可，无需登录~
+        $headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1','Cookie: did=web_4339aefb12ad4b6abd8bdfc23917b3a8; didv=1655992503000;',
             'Referer: ' . $locs, 'Content-Type: application/json');
+        //$headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1', 'Referer: ' . $locs, 'Content-Type: application/json');
         $post_data = '{"photoId": "' . str_replace(['video/', '?'], '', $matches[1]) . '","isLongVideo": false}';
         $vurl ='https://v.m.chenzhongtech.com/rest/wd/photo/info?kpn=KUAISHOU&captchaToken=';
         $curl = curl_init();
