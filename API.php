@@ -99,6 +99,7 @@ class API {
     static public function kuaishou($url) {
         $locs = get_headers($url, true) ['Location'];
         //$locs = get_headers($url, true);
+        if(is_array($locs)) $locs=$locs[0];
         //var_dump($locs);
         $d= 'video.kuaishou.com/';
         $e = '/';
@@ -121,7 +122,7 @@ class API {
         if ($json) {
             $url = $img;
             $title = $json['shareInfo']['shareTitle'];
-            $cover = 'https://p2.a.yximgs.com'.$json['atlas']['music'];
+            $cover = isset($json['atlas'])?'https://p2.a.yximgs.com'.$json['atlas']['music']:'';
             $return = array('nickname' => $title, 'video_url' => $url, 'music' => $cover,'type'=>$type);
             //echo '$type'.$type.'<br>';
             // var_dump($return);
@@ -222,7 +223,7 @@ class API {
 
     static public function get_ks_json($locs,$matches) {
         #注意：如果解析失效（提示需要验证码），请更新下边这行代码的Cookie重试（主要是did=xxxx），抓包首页直接F12即可，无需登录~
-        $headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1','Cookie: did=web_4339aefb12ad4b6abd8bdfc23917b3a8; didv=1655992503000;',
+        $headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1','Cookie: did=web_4339aefb12ad4b6abd8bdfc23917b3a8; didv=1668768193000;',
             'Referer: ' . $locs, 'Content-Type: application/json');
         //$headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1', 'Referer: ' . $locs, 'Content-Type: application/json');
         $post_data = '{"photoId": "' . str_replace(['video/', '?'], '', $matches[1]) . '","isLongVideo": false}';
