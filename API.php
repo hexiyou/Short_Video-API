@@ -17,6 +17,9 @@ class API {
         case 'v.kuaishou.com':
             return self::kuaishou($url);
             break;
+        case 'www.kuaishou.com':
+            return self::kuaishou_web($url);
+            break;
         default:
             return self::result(500, '抱歉，此url暂不支持！');
         }
@@ -134,6 +137,42 @@ class API {
 
 
     }
+    
+    static public function kuaishou_web($url) {
+        ##此函数暂时有问题，用不了~
+        preg_match('/\/short-video\/(.*?)[\?\&\/]/i', $url, $matches);
+        //echo "输出匹配结果";
+        //var_dump($matches);
+
+        $json = self::get_ks_json($locs,$matches);
+        var_dump($json);
+        
+        if(isset($json['atlas']['list']))//存在是图        //这个函数用来测试变量是否已经配置。若变量已存在则返回 true 值。其它情形返回 false 值。
+        {
+            for($i=0;$i<count($json['atlas']['list']);$i++){
+                $img[$i] = 'https://p2.a.yximgs.com'.$json['atlas']['list'][$i];
+            }
+            $type = 'photo';
+        }else{
+            $img = $json['photo']['mainMvUrls'][0]['url'];
+            $type = 'movie';
+        }
+
+        if ($json) {
+            $url = $img;
+            $title = $json['shareInfo']['shareTitle'];
+            $cover = isset($json['atlas'])?'https://p2.a.yximgs.com'.$json['atlas']['music']:'';
+            $return = array('nickname' => $title, 'video_url' => $url, 'music' => $cover,'type'=>$type);
+            //echo '$type'.$type.'<br>';
+            // var_dump($return);
+            return self::result(200, $return);
+
+        } else {
+            return self::result(500, '解析出错！');
+        }
+
+
+    }
 
     static public function httpRequest($url, $method = 'POST', $postfields = null, $headers = array()) {
 
@@ -224,7 +263,7 @@ class API {
     static public function get_ks_json($locs,$matches) {
         #注意：如果解析失效（提示需要验证码），请更新下边这行代码的Cookie重试（主要是did=xxxx），抓包首页直接F12即可，无需登录~
         $headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1','Cookie: did=web_4339aefb12ad4b6abd8bdfc23917b3a8; didv=1668768193000;',
-            'Referer: ' . $locs, 'Content-Type: application/json');
+           'Referer: ' . $locs, 'Content-Type: application/json');
         //$headers = array('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1', 'Referer: ' . $locs, 'Content-Type: application/json');
         $post_data = '{"photoId": "' . str_replace(['video/', '?'], '', $matches[1]) . '","isLongVideo": false}';
         $vurl ='https://v.m.chenzhongtech.com/rest/wd/photo/info?kpn=KUAISHOU&captchaToken=';
